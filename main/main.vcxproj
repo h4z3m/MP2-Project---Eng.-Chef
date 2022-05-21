@@ -73,7 +73,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\main;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\LiquidCrystal\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Stepper\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\Documents\Arduino\libraries\OneWire;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\Documents\Arduino\libraries\DallasTemperature;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\Documents\Arduino\libraries\Keypad\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\Stove+Temp;$(ProjectDir)..\..\..\Testing\Testing;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\\lib\gcc\avr\7.3.0\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\\lib\gcc\avr\7.3.0\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include-fixed;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\main;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\LiquidCrystal\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Stepper\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\Documents\Arduino\libraries\OneWire;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\Documents\Arduino\libraries\DallasTemperature;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\..\..\..\2NDSEM~1\CMPN211\MP2PRO~1\SERVO2~1\Sketch1\main;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\\lib\gcc\avr\7.3.0\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\\lib\gcc\avr\7.3.0\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include-fixed;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.main.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__AVR_atmega328p__;__AVR_ATmega328P__;__AVR_ATmega328p__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=108016;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -108,9 +108,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Stove+Temp\stove.h" />
-    <ClInclude Include="..\..\..\Testing\Testing\Digital_sensor.h" />
-    <ClInclude Include="..\..\..\Testing\Testing\UserInterface.h" />
     <ClInclude Include="arm_2Link.h" />
     <ClInclude Include="dcMotor.h" />
     <ClInclude Include="Motor.h" />
@@ -119,9 +116,6 @@
     <ClInclude Include="__vm\.main.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Stove+Temp\stove.cpp" />
-    <ClCompile Include="..\..\..\Testing\Testing\Digital_sensor.cpp" />
-    <ClCompile Include="..\..\..\Testing\Testing\UserInterface.cpp" />
     <ClCompile Include="arm_2Link.cpp" />
     <ClCompile Include="dcMotor.cpp" />
     <ClCompile Include="Motor.cpp" />

@@ -28,7 +28,7 @@ private:
     //struct Motor_configType* motorConfig = nullptr;
     const float32 stepSize = 1.8;
     const uint16 SPR = 1600;
-    stepperDirection currDir = CCW;
+    stepperDirection currDir = stepperDirection::CW;
 public:
     stepperMotor();
     void init(struct Motor_configType* conf);

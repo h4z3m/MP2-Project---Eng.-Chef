@@ -138,6 +138,7 @@ stepperMotor sliderMotor;
 servoMotor containerMotor;
 container c(three,&sliderMotor,&rotationMotor,&containerMotor);
 stove mainStove;
+Servo myservo;
 /*********************************** Global functions ************************************/
 
 /*Ali was here*/
@@ -163,6 +164,7 @@ void setup() {					/*To execute only once*/
 	rotationMotor.init(&conf2);
 	//containerMotor.init();
 	digitalWrite(relPin, LOW);
+	myservo.attach(9);
 }
 
 /********************************** Program super loop **********************************/
@@ -189,8 +191,15 @@ void loop() {
 	rotationMotor.changeDirection(CCW);
 	rotationMotor.write(90);
 	delay(2000);*/
+	myservo.write(35);
+	delay(1800);
+	myservo.write(90);
+	delay(100);
+	myservo.write(135);
+	delay(1500);
+	/*rotationMotor.write(2.0f);
+	delay(2000);
 
-	rotationMotor.write(2.0f);
 	digitalWrite(relPin, HIGH);
 	rotationMotor.write(0.25f);
 	delay(250);
@@ -198,10 +207,12 @@ void loop() {
 	rotationMotor.write(0.25f);
 	delay(250);
 	rotationMotor.invertDirection();
+
 	digitalWrite(relPin, LOW);
+
 	rotationMotor.write(2.0f);
 
-	delay(10000);
+	delay(10000);*/
 	/*digitalWrite(relPin, HIGH);
 	delay(2000);
 	rotationMotor.write(0.5f);

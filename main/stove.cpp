@@ -16,7 +16,7 @@ void stove::heat_minutes_for_normal_humans(char minutes) {
     digitalWrite(RELAY_PIN, RELAY_HIGH_LOGIC);
     delay(time_ms);
 }
-void stove::heat_minutes(char minutes, temp_sensor &sensor)
+void stove::heat_minutes(char minutes, Digital_sensor &sensor)
 {
   if (minutes <= 0)
     return;
