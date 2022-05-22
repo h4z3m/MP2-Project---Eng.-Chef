@@ -11,9 +11,9 @@
 /********************************** Global variables **********************************/
 
 struct Motor_configType conf1 = { 5,9,0,0,0,10800.0f,700 };
-struct Motor_configType conf2 = { 5,9,0,0,0,360,700 };
-struct Motor_configType conf3 = { 9,3,0,0,0,180,0.2f };
-struct Motor_configType conf4 = { 8,2,0,0,0,180,0.2f };
+struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
+struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
+struct Motor_configType conf4 = { 11,12,0,0,0,360,0.2f };
 //struct Motor_configType conf5 = {}
 stepperMotor stepper;
 Servo myservo;
@@ -31,6 +31,7 @@ enum rotation_direction {
 class container {
 	stepperMotor* sliderMotor;
 	stepperMotor* rotationMotor;
+	stepperMotor* armMotor;
 	servoMotor* containerMotor;
 
 public:
@@ -114,6 +115,9 @@ public:
 	void rotateToContainer(enum Container_ID targetContainer) {
 		if (targetContainer % 2 == 0) rotate_right();
 		else rotate_left();
+	}
+	void dropFromContainer() {
+
 	}
 
 };
