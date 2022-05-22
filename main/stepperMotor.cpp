@@ -22,6 +22,7 @@ void stepperMotor::init(struct Motor_configType* conf)
 	motorConfig = conf;
 	pinMode(motorConfig->pin, OUTPUT);
 	pinMode(motorConfig->dirPin, OUTPUT);
+	changeDirection(currDir);
 	//this->write(motorConfig->initialAngle);
 }
 
