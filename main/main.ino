@@ -9,15 +9,14 @@
 #include "stepperMotor.h" 
 #include "stove.h"
 /********************************** Global variables **********************************/
-
+//Slider motor config
 struct Motor_configType conf1 = { 5,9,0,0,0,10800.0f,700 };
+//Rotation Motormotor config
 struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
+//Container servo motor config
 struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
+//Arm motor config
 struct Motor_configType conf4 = { 11,12,0,0,0,360,0.2f };
-//struct Motor_configType conf5 = {}
-stepperMotor stepper;
-Servo myservo;
-
 
 /*********************************** Definitions ************************************/
 #define relPin 2
@@ -37,10 +36,11 @@ class container {
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation, servoMotor* container) {
+	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
+		armMotor = arm;
 		containerMotor = container;
 	}
 	void rotate_to_mid() {
@@ -74,11 +74,11 @@ public:
 	}
 
 	void open_container(uint16) {
-		myservo.write(35);
+		containerMotor->write(35);
 		delay(1800);
-		myservo.write(90);
+		containerMotor->write(90);
 		delay(100);
-		myservo.write(135);
+		containerMotor->write(135);
 		delay(1500);
 
 	}
@@ -121,13 +121,15 @@ public:
 	}
 
 };
+
+
 stepperMotor rotationMotor;
 stepperMotor sliderMotor;
+stepperMotor armMotor;
 servoMotor containerMotor;
-container c(zero, &sliderMotor, &rotationMotor, &containerMotor);
+container c(zero, &sliderMotor, &rotationMotor, &armMotor, &containerMotor);
 stove mainStove;
-
-
+Servo myservo;
 
 /*********************************** Global functions ************************************/
 
@@ -156,6 +158,7 @@ void setup() {					/*To execute only once*/
 	pinMode(12, OUTPUT);
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
+	armMotor.init(&conf3);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(11, LOW);
