@@ -11,8 +11,8 @@
 /********************************** Global variables **********************************/
 
 struct Motor_configType conf1 = { 5,9,0,0,0,10800.0f,700 };
-struct Motor_configType conf2 = { 5,9,0,0,0,360,700 };
-struct Motor_configType conf3 = { 9,3,0,0,0,180,0.2f };
+struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
+struct Motor_configType conf3 = { 9,3,0,0,0,360,0.2f };
 struct Motor_configType conf4 = { 8,2,0,0,0,180,0.2f };
 //struct Motor_configType conf5 = {}
 stepperMotor stepper;
@@ -72,14 +72,17 @@ public:
 		sliderMotor->changeDirection(sliderMotor->currDir);
 	}
 
-	void open_container(uint16) {
-		myservo.write(35);
+	void open_container(uint16 time_sec) {
+		containerMotor->write(45);
 		delay(1800);
-		myservo.write(90);
-		delay(100);
-		myservo.write(135);
-		delay(1500);
+		containerMotor->write(90);
+		delay(time_sec*1000);
+		
 
+	}
+	void close_container() {
+		containerMotor->write(135);
+		delay(1500);
 	}
 
 	void get_from_container(enum Container_ID targetContainer)
@@ -171,15 +174,13 @@ void loop() {
 
 		delay(3000);
 		c.get_from_container(seven);
-		
-
-		c.get_from_container(six);
-
-		c.get_from_container(three);
+		c.open_container(3);
+		c.close_container();
 
 
 
-		c.get_from_container(six);
+
+
 		c.get_from_container(zero);
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
