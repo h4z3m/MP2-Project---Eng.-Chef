@@ -9,15 +9,14 @@
 #include "stepperMotor.h" 
 #include "stove.h"
 /********************************** Global variables **********************************/
-
+//Slider motor config
 struct Motor_configType conf1 = { 5,9,0,0,0,10800.0f,700 };
+//Rotation Motormotor config
 struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
-struct Motor_configType conf3 = { 9,3,0,0,0,360,0.2f };
-struct Motor_configType conf4 = { 8,2,0,0,0,180,0.2f };
-//struct Motor_configType conf5 = {}
-stepperMotor stepper;
-Servo myservo;
-
+//Container servo motor config
+struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
+//Arm motor config
+struct Motor_configType conf4 = { 11,12,0,0,0,360,0.2f };
 
 /*********************************** Definitions ************************************/
 #define relPin 2
@@ -31,15 +30,17 @@ enum rotation_direction {
 class container {
 	stepperMotor* sliderMotor;
 	stepperMotor* rotationMotor;
+	stepperMotor* armMotor;
 	servoMotor* containerMotor;
 
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation, servoMotor* container) {
+	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
+		armMotor = arm;
 		containerMotor = container;
 	}
 	void rotate_to_mid() {
@@ -72,15 +73,11 @@ public:
 		sliderMotor->changeDirection(sliderMotor->currDir);
 	}
 
-	void open_container(uint16 time_sec) {
-		containerMotor->write(45);
+	void open_container(uint16) {
+		containerMotor->write(35);
 		delay(1800);
 		containerMotor->write(90);
-		delay(time_sec*1000);
-		
-
-	}
-	void close_container() {
+		delay(100);
 		containerMotor->write(135);
 		delay(1500);
 	}
@@ -118,15 +115,20 @@ public:
 		if (targetContainer % 2 == 0) rotate_right();
 		else rotate_left();
 	}
+	void dropFromContainer() {
+
+	}
 
 };
+
+
 stepperMotor rotationMotor;
 stepperMotor sliderMotor;
+stepperMotor armMotor;
 servoMotor containerMotor;
-container c(zero, &sliderMotor, &rotationMotor, &containerMotor);
+container c(zero, &sliderMotor, &rotationMotor, &armMotor, &containerMotor);
 stove mainStove;
-
-
+Servo myservo;
 
 /*********************************** Global functions ************************************/
 
@@ -155,6 +157,7 @@ void setup() {					/*To execute only once*/
 	pinMode(12, OUTPUT);
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
+	armMotor.init(&conf3);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(11, LOW);
