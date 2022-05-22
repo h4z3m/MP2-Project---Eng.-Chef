@@ -16,7 +16,7 @@ struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
 //Container servo motor config
 struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
 //Arm motor config
-struct Motor_configType conf4 = { 11,12,0,0,0,360,0.2f };
+struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
 
 /*********************************** Definitions ************************************/
 #define relPin 2
@@ -117,6 +117,13 @@ public:
 		else rotate_left();
 	}
 	void dropFromContainer() {
+		armMotor->changeDirection(CW);
+		armMotor->write(0.5f);
+		delay(1000);
+		armMotor->invertDirection();
+		armMotor->write(0.55f);
+		armMotor->invertDirection();
+		delay(250); 
 
 	}
 
@@ -158,7 +165,8 @@ void setup() {					/*To execute only once*/
 	pinMode(12, OUTPUT);
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
-	armMotor.init(&conf3);
+	myservo.attach(9, 1000, 2000);
+	armMotor.init(&conf4);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(11, LOW);
@@ -175,8 +183,9 @@ void loop() {
 	//Serial.println(c.currentContainer);
 	while (true)
 	{
-
-		delay(3000);
+		c.dropFromContainer();
+		delay(5000);
+		/*delay(3000);
 		c.get_from_container(seven);
 		
 
@@ -190,7 +199,7 @@ void loop() {
 		c.get_from_container(zero);
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
-		sliderMotor.changeDirection(stepperDirection::CW);
+		sliderMotor.changeDirection(stepperDirection::CW);*/
 
 
 	}
