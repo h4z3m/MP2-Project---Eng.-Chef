@@ -42,17 +42,12 @@ class container {
 	stepperMotor* sliderMotor;
 	stepperMotor* rotationMotor;
 	stepperMotor* armMotor;
-	servoMotor* containerMotor;
+	Servo* containerMotor;
 
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, 
-		stepperMotor* slider,
-		stepperMotor* rotation,
-		stepperMotor* arm, 
-		servoMotor* container
-		) {
+	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
@@ -89,14 +84,18 @@ public:
 		sliderMotor->changeDirection(sliderMotor->currDir);
 	}
 
-	void open_container(uint16) {
-		containerMotor->write(35);
-		delay(1800);
-		containerMotor->write(90);
-		delay(100);
+	void open_container(uint16 time_push_sec,uint16 time_open_sec) {
 		containerMotor->write(135);
-		delay(1500);
+		delay(time_push_sec*1000);
+		containerMotor->write(90);
+		delay(time_open_sec*1000);
+		close_container(time_push_sec);
+	}
 
+	void close_container(uint16 time_pull_sec) {
+		containerMotor->write(45);
+		delay(time_pull_sec*1000);
+		containerMotor->write(90);
 	}
 
 	void get_from_container(enum Container_ID targetContainer)
@@ -106,6 +105,8 @@ public:
 		moveToContainer(targetContainer);
 		delay(1000);
 		rotateToContainer(targetContainer);
+		delay(1000);
+		c.open_container(1, 2);
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
@@ -174,10 +175,11 @@ public:
 stepperMotor rotationMotor;
 stepperMotor sliderMotor;
 stepperMotor armMotor;
-servoMotor containerMotor;
-container c(zero, &sliderMotor, &rotationMotor, &armMotor, &containerMotor);
 stove mainStove;
 Servo myservo;
+
+//servoMotor containerMotor;
+container c(zero, &sliderMotor, &rotationMotor, &armMotor, &myservo);
 
 /*********************************** Global functions ************************************/
 
@@ -206,7 +208,7 @@ void setup() {					/*To execute only once*/
 	pinMode(12, OUTPUT);
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
-	myservo.attach(9, 1000, 2000);
+	myservo.attach(3, 1000, 2000);
 	armMotor.init(&conf4);
 
 	digitalWrite(relPin, LOW);
@@ -228,21 +230,20 @@ void loop() {
 		delay(5000);
 		/*delay(3000);
 		c.get_from_container(seven);
+		c.open_container(3);
+		c.close_container();
 		
 
-		c.get_from_container(six);
-
-		c.get_from_container(three);
 
 
 
-		c.get_from_container(six);
 		c.get_from_container(zero);
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
 		sliderMotor.changeDirection(stepperDirection::CW);*/
-
-
+		c.get_from_container(seven);
+		
+		c.get_from_container(zero);
 	}
 }
 
