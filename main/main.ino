@@ -17,6 +17,8 @@ struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
 struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
 //Arm motor config
 struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
+//Cover motor
+struct Motor_configType conf5 = { 13,7,0,0,0,360,800 };
 
 /*********************************** Definitions ************************************/
 #define relPin 2
@@ -107,7 +109,7 @@ public:
 		delay(1000);
 		rotateToContainer(targetContainer);
 		delay(1000);
-		c.open_container(1, 2);
+		open_container(1, 2);
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
@@ -139,7 +141,7 @@ public:
 		armMotor->write(0.5f);
 		delay(1000);
 		armMotor->invertDirection();
-		armMotor->write(0.55f);
+		armMotor->write(0.5f);
 		armMotor->invertDirection();
 		delay(250); 
 
@@ -176,6 +178,7 @@ public:
 stepperMotor rotationMotor;
 stepperMotor sliderMotor;
 stepperMotor armMotor;
+stepperMotor coverMotor;
 stove mainStove;
 Servo myservo;
 
@@ -211,12 +214,13 @@ void setup() {					/*To execute only once*/
 	rotationMotor.init(&conf2);
 	myservo.attach(3, 1000, 2000);
 	armMotor.init(&conf4);
+	coverMotor.init(&conf5);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(11, LOW);
 	digitalWrite(12, LOW);
-	digitalWrite(13, LOW);
-	digitalWrite(7, LOW);
+	/*digitalWrite(13, LOW);
+	digitalWrite(7, LOW);*/
 
 }
 
@@ -227,8 +231,12 @@ void loop() {
 	//Serial.println(c.currentContainer);
 	while (true)
 	{
-		c.dropFromContainer();
+		coverMotor.write(0.9f);
 		delay(5000);
+		coverMotor.invertDirection();
+		coverMotor.write(0.9f);
+		delay(5000);
+
 		/*delay(3000);
 		c.get_from_container(seven);
 		c.open_container(3);
@@ -242,9 +250,7 @@ void loop() {
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
 		sliderMotor.changeDirection(stepperDirection::CW);*/
-		c.get_from_container(seven);
 		
-		c.get_from_container(zero);
 	}
 }
 
