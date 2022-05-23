@@ -20,12 +20,23 @@ struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
 
 /*********************************** Definitions ************************************/
 #define relPin 2
+#define WATER_PUMP_PIN 6
+#define MILK_PUMP_PIN 7
+#define OIL_PUMP_PIN 8
+#define CREAM_PUMP_PIN 9
+#define PUMP_DURATION_MS (3000U)
 enum Container_ID {
 	zero, one, two, three, four, five, six, seven, eight, nine
 };
+
 enum rotation_direction {
 	middle, even, odd
 };
+
+enum Liquids {
+	Water,Milk,Oil,Cream
+};
+
 /*********************************** Types declarations ************************************/
 class container {
 	stepperMotor* sliderMotor;
@@ -36,7 +47,12 @@ class container {
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
+	container(Container_ID initalContainer, 
+		stepperMotor* slider,
+		stepperMotor* rotation,
+		stepperMotor* arm, 
+		servoMotor* container
+		) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
@@ -127,6 +143,31 @@ public:
 
 	}
 
+	void pumpLiquid(Liquids liq) {
+		switch (liq) {
+		case Water:
+			digitalWrite(WATER_PUMP_PIN, HIGH);
+			delay(PUMP_DURATION_MS);
+			digitalWrite(WATER_PUMP_PIN, LOW);
+			break;
+		case Milk:
+			digitalWrite(MILK_PUMP_PIN, HIGH);
+			delay(PUMP_DURATION_MS);
+			digitalWrite(MILK_PUMP_PIN, LOW);
+			break;
+		case Oil:
+			digitalWrite(OIL_PUMP_PIN, HIGH);
+			delay(PUMP_DURATION_MS*3);
+			digitalWrite(OIL_PUMP_PIN, LOW);
+			break;
+		case Cream:
+			digitalWrite(CREAM_PUMP_PIN, HIGH);
+			delay(PUMP_DURATION_MS*3);
+			digitalWrite(CREAM_PUMP_PIN, LOW);
+			break;
+
+		}
+	}
 };
 
 
