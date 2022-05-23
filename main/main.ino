@@ -22,10 +22,10 @@ struct Motor_configType conf5 = { 13,7,0,0,0,360,800 };
 
 /*********************************** Definitions ************************************/
 #define relPin 2
-#define WATER_PUMP_PIN 6
-#define MILK_PUMP_PIN 7
-#define OIL_PUMP_PIN 8
-#define CREAM_PUMP_PIN 9
+#define WATER_PUMP_PIN 22
+#define MILK_PUMP_PIN 24
+#define OIL_PUMP_PIN 26
+#define CREAM_PUMP_PIN 28
 #define PUMP_DURATION_MS (3000U)
 enum Container_ID {
 	zero, one, two, three, four, five, six, seven, eight, nine
@@ -43,6 +43,15 @@ enum Cover_State {
 };
 
 /*********************************** Types declarations ************************************/
+
+
+stepperMotor rotationMotor;
+stepperMotor sliderMotor;
+stepperMotor armMotor;
+stepperMotor coverMotor;
+Servo containerMotor;
+
+stove mainStove;
 
 
 class container {
@@ -145,7 +154,7 @@ public:
 		else {
 			sliderMotor.changeDirection(CCW);
 		}
-		sliderMotor->write(abs((nextContainer / 2) - (currentContainer / 2)) * 0.75f);
+		sliderMotor.write(abs((nextContainer / 2) - (currentContainer / 2)) * 0.75f);
 		currentContainer = nextContainer;
 	}
 
@@ -154,12 +163,12 @@ public:
 		else rotate_left();
 	}
 	void dropFromContainer() {
-		armMotor->changeDirection(CCW);
-		armMotor->write(0.36f);
+		armMotor.changeDirection(CCW);
+		armMotor.write(0.36f);
 		delay(1000);
-		armMotor->invertDirection();
-		armMotor->write(0.36f);
-		armMotor->invertDirection();
+		armMotor.invertDirection();
+		armMotor.write(0.36f);
+		armMotor.invertDirection();
 		delay(250);
 
 	}
@@ -192,27 +201,18 @@ public:
 
 	void rotate_then_drop_in_7ala() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor->changeDirection(CCW);
-		rotationMotor->write(0.1f);
+		rotationMotor.changeDirection(CCW);
+		rotationMotor.write(0.1f);
 		delay(1000);
 		dropFromContainer();
-		rotationMotor->changeDirection(CW);
-		rotationMotor->write(0.1f);
+		rotationMotor.changeDirection(CW);
+		rotationMotor.write(0.1f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
 		delay(500);
 	}
 
 };
-
-
-stepperMotor rotationMotor;
-stepperMotor sliderMotor;
-stepperMotor armMotor;
-stepperMotor coverMotor;
-Servo containerMotor;
-
-stove mainStove;
 
 container c(zero);
 
@@ -272,8 +272,7 @@ void loop() {
 	//Serial.println(c.currentContainer);
 	while (true)
 	{
-		c.dropFromContainer();
-		delay(5000);
+		
 		/*delay(3000);
 		c.get_from_container(seven);
 		c.open_container(3);
