@@ -4,29 +4,32 @@
 #include <LiquidCrystal.h>
 #define DEBUG_MODE (1u)
 #include <Stepper.h>
-
+#include "dcMotor.h"
 #include "servoMotor.h"
 #include "stepperMotor.h" 
 #include "stove.h"
 /********************************** Global variables **********************************/
-//Slider motor config
-struct Motor_configType conf1 = { 5,9,0,0,0,10800.0f,700 };
-//Rotation Motormotor config
-struct Motor_configType conf2 = { 5,9,0,0,0,360,1000 };
+//Slider stepper motor config
+struct Motor_configType conf1 = { 22,23,0,0,0,10800.0f,700 };
+//Rotation stepper config
+struct Motor_configType conf2 = { 22,23,0,0,0,360,1000 };
 //Container servo motor config
 struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
-//Arm motor config
-struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
-//Cover motor
-struct Motor_configType conf5 = { 13,7,0,0,0,360,800 };
+//Arm motor stepper config
+struct Motor_configType conf4 = { 28,27,0,0,0,360,800 };
+//Cover stepper motor
+struct Motor_configType conf5 = { 30,29,0,0,0,360,800 };
+//Stirring DC motor config
+struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
 
 /*********************************** Definitions ************************************/
-#define relPin 2
-#define WATER_PUMP_PIN 22
-#define MILK_PUMP_PIN 24
-#define OIL_PUMP_PIN 26
-#define CREAM_PUMP_PIN 28
+#define relPin 24
+#define WATER_PUMP_PIN 32
+#define MILK_PUMP_PIN 33
+#define OIL_PUMP_PIN 34
+#define CREAM_PUMP_PIN 31
 #define PUMP_DURATION_MS (3000U)
+#define STIRRING_SPEED (128U)
 enum Container_ID {
 	zero, one, two, three, four, five, six, seven, eight, nine
 };
@@ -50,6 +53,7 @@ stepperMotor sliderMotor;
 stepperMotor armMotor;
 stepperMotor coverMotor;
 Servo containerMotor;
+dcMotor stirringMotor;
 
 stove mainStove;
 
@@ -66,17 +70,31 @@ public:
 		currentContainer = initalContainer;
 		
 	}
-	void openCover() {
+	void startStirring() {
+		stirringMotor.setSpeed(STIRRING_SPEED);
+	}
+	
+	void stopStirring() {
+		stirringMotor.setSpeed(0);
+	}
+
+	/*void openCover() {
+		stopStirring();
+		if (coverState == OPENED)
+			return;
+		coverMotor.changeDirection(stepperDirection::CCW);
 		coverMotor.write(0.9f);
 		coverState = OPENED;
 		delay(1000);
 	}
 	void closeCover() {
-		coverMotor.invertDirection();
+		if (coverState == CLOSED)
+			return;
+		coverMotor.changeDirection(stepperDirection::CW);
 		coverMotor.write(0.9f);
 		coverState = CLOSED;
 		delay(1000);
-	}
+	}*/
 	void rotate_to_mid() {
 		if (current_direction == even) { rotate_left(); }
 		else if (current_direction == odd) { rotate_right(); }
@@ -85,7 +103,7 @@ public:
 
 	void rotate_left() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor.changeDirection(CW);
+		rotationMotor.changeDirection(stepperDirection::CW);
 		rotationMotor.write(0.25f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
@@ -97,7 +115,7 @@ public:
 
 	void rotate_right() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor.changeDirection(CCW);
+		rotationMotor.changeDirection(stepperDirection::CCW);
 		rotationMotor.write(0.25f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
@@ -134,6 +152,8 @@ public:
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
+		//openCover();
+		delay(1000);
 		moveToContainer(nine);
 		delay(2000);
 		rotate_then_drop_in_7ala();
@@ -149,10 +169,10 @@ public:
 			return;
 		}
 		if ((nextContainer - currentContainer) > 0) {
-			sliderMotor.changeDirection(CW);
+			sliderMotor.changeDirection(stepperDirection::CW);
 		}
 		else {
-			sliderMotor.changeDirection(CCW);
+			sliderMotor.changeDirection(stepperDirection::CCW);
 		}
 		sliderMotor.write(abs((nextContainer / 2) - (currentContainer / 2)) * 0.75f);
 		currentContainer = nextContainer;
@@ -163,7 +183,7 @@ public:
 		else rotate_left();
 	}
 	void dropFromContainer() {
-		armMotor.changeDirection(CCW);
+		armMotor.changeDirection(stepperDirection::CCW);
 		armMotor.write(0.36f);
 		delay(1000);
 		armMotor.invertDirection();
@@ -201,11 +221,11 @@ public:
 
 	void rotate_then_drop_in_7ala() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor.changeDirection(CCW);
+		rotationMotor.changeDirection(stepperDirection::CCW);
 		rotationMotor.write(0.1f);
 		delay(1000);
 		dropFromContainer();
-		rotationMotor.changeDirection(CW);
+		rotationMotor.changeDirection(stepperDirection::CW);
 		rotationMotor.write(0.1f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
@@ -221,9 +241,10 @@ container c(zero);
 /*Ali was here*/
 void botato() {
 	//mainStove.heat_minutes_for_normal_humans(0.5);
-	c.moveToContainer(zero);
+	c.moveToContainer(two);
 	//c.moveToPlate();
 	delay(5000);
+	c.moveToContainer(zero);
 }
 
 void roz_blebn() {
@@ -237,6 +258,7 @@ void roz_blebn() {
 	delay(25 * 60 * 1000);
 }
 /********************************** Setup function **********************************/
+char order;
 void setup() {					/*To execute only once*/
 	Serial.begin(9600);
 	/*
@@ -248,65 +270,63 @@ void setup() {					/*To execute only once*/
 		2. Move arm under each container and make sure of its position
 	*/
 	pinMode(relPin, OUTPUT);
-	pinMode(13, OUTPUT);
-	pinMode(7, OUTPUT);
-	pinMode(11, OUTPUT);
-	pinMode(12, OUTPUT);
+	pinMode(30, OUTPUT);
+	pinMode(29, OUTPUT);
+	//Motor initialization
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
 	containerMotor.attach(3, 1000, 2000);
 	armMotor.init(&conf4);
 	coverMotor.init(&conf5);
+	stirringMotor.init(&conf6);
 
 	digitalWrite(relPin, LOW);
-	digitalWrite(11, LOW);
-	digitalWrite(12, LOW);
+	digitalWrite(30, LOW);
+	digitalWrite(29, LOW);
 
 	//mainStove.heat_minutes_for_normal_humans(0.5);
 }
 
 /********************************** Program super loop **********************************/
-
+unsigned char recipe = 0;
 void loop() {
+	//cover motor
+	/*/c.closeCover();
+	c.openCover();*/
 
-	//Serial.println(c.currentContainer);
-	while (true)
-	{
-		
-		/*delay(3000);
-		c.get_from_container(seven);
-		c.open_container(3);
-		c.close_container();
-		
+	//arm motor
+	/*c.dropFromContainer();
+
+	//rotation and arm motors
+	c.rotate_then_drop_in_7ala();
+	c.closeCover();*/
+
+	//rotationmotor
+	/*c.rotate_to_mid();
+	c.rotate_left();
+	c.rotate_right();*/
 
 
+	//containerMotor
+	//c.open_container(1, 1);
+	//c.close_container(1);
 
+	/*
+	//slider motor
+	c.moveToContainer(zero);
 
-		c.get_from_container(zero);
-		c.rotate_to_mid();
-		rotationMotor.changeDirection(stepperDirection::CW);
-		sliderMotor.changeDirection(stepperDirection::CW);*/
-		roz_blebn();
-		c.moveToContainer(zero);
-		
-	}
+	c.rotateToContainer(zero);
+
+	c.pumpLiquid(Water);
+	c.rotate_then_drop_in_7ala();
+
+	//all of the above
+	c.get_from_container(zero, 1, 1);*/
+	
+
 }
 
 
 
-/*
--> slider move to given container, and given current container
--> moveSlider(dest, currPos); done
 
--> rotate rotation motor given the container ID
--> rotationMotor.rotate(cont ID) done
-
--> servo motor open given open time
--> servoMotor.open(Time);
-
--> close container
--> servoMotor.close(); should be called after  opened
--> goToOven given current position
--> drop
--> recover
-*/
+	

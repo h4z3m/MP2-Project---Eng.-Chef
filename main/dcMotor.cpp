@@ -15,9 +15,6 @@
 #include "dcMotor.h"
 
 
- /********************************** Definitions **********************************/
-#define GEAR_RADIUS_CM (2.5F)
-
 /********************************** Public Functions **********************************/
 dcMotor::dcMotor() {
 
@@ -48,7 +45,7 @@ void dcMotor::setSpeed(uint8 Motor_speed)
 	analogWrite(motorConfig->pin, Motor_speed);
 }
 
-void dcMotor::changeDirection(DC_direction dir)
+void dcMotor::changeDirection(uint8 dir)
 {
 	analogWrite(motorConfig->dirPin, dir);
 }
