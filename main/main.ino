@@ -38,23 +38,35 @@ enum rotation_direction {
 enum Liquids {
 	Water,Milk,Oil,Cream
 };
+enum Cover_State {
+	OPENED,CLOSED
+};
 
 /*********************************** Types declarations ************************************/
+
+
 class container {
-	stepperMotor* sliderMotor;
-	stepperMotor* rotationMotor;
-	stepperMotor* armMotor;
-	Servo* containerMotor;
+	
 
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, Servo* container) {
+	enum Cover_State coverState;
+
+	container(Container_ID initalContainer) {
 		currentContainer = initalContainer;
-		sliderMotor = slider;
-		rotationMotor = rotation;
-		armMotor = arm;
-		containerMotor = container;
+		
+	}
+	void openCover() {
+		coverMotor.write(0.9f);
+		coverState = OPENED;
+		delay(1000);
+	}
+	void closeCover() {
+		coverMotor.invertDirection();
+		coverMotor.write(0.9f);
+		coverState = CLOSED;
+		delay(1000);
 	}
 	void rotate_to_mid() {
 		if (current_direction == even) { rotate_left(); }
@@ -64,41 +76,41 @@ public:
 
 	void rotate_left() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor->changeDirection(CW);
-		rotationMotor->write(0.25f);
+		rotationMotor.changeDirection(CW);
+		rotationMotor.write(0.25f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
 		delay(500);
 		current_direction = odd;
 		//Assert slider motor direction
-		sliderMotor->changeDirection(sliderMotor->currDir);
+		sliderMotor.changeDirection(sliderMotor.currDir);
 	}
 
 	void rotate_right() {
 		digitalWrite(relPin, HIGH);
-		rotationMotor->changeDirection(CCW);
-		rotationMotor->write(0.25f);
+		rotationMotor.changeDirection(CCW);
+		rotationMotor.write(0.25f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
 		delay(500);
 		current_direction = even;
 		//Assert slider motor direction
-		sliderMotor->changeDirection(sliderMotor->currDir);
+		sliderMotor.changeDirection(sliderMotor.currDir);
 	}
 
 	void open_container(uint16 time_push_sec,uint16 time_open_sec) {
-		containerMotor->write(135);
+		containerMotor.write(135);
 		delay(time_push_sec*1000);
-		containerMotor->write(90);
+		containerMotor.write(90);
 		delay(time_open_sec*1000);
 		close_container(time_push_sec);
 	}
 
 
 	void close_container(uint16 time_pull_sec) {
-		containerMotor->write(45);
+		containerMotor.write(45);
 		delay(time_pull_sec*1000);
-		containerMotor->write(90);
+		containerMotor.write(90);
 	}
 
 	void get_from_container(enum Container_ID targetContainer)
@@ -113,7 +125,7 @@ public:
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
-		Serial.println(sliderMotor->currDir);
+		Serial.println(sliderMotor.currDir);
 	}
 
 	void moveToContainer(enum Container_ID nextContainer) {
@@ -123,12 +135,12 @@ public:
 			return;
 		}
 		if ((nextContainer - currentContainer) > 0) {
-			sliderMotor->changeDirection(CW);
+			sliderMotor.changeDirection(CW);
 		}
 		else {
-			sliderMotor->changeDirection(CCW);
+			sliderMotor.changeDirection(CCW);
 		}
-		sliderMotor->write(abs((nextContainer / 2) - (currentContainer / 2)) * 0.7f);
+		sliderMotor.write(abs((nextContainer / 2) - (currentContainer / 2)) * 0.7f);
 		currentContainer = nextContainer;
 	}
 
@@ -137,12 +149,12 @@ public:
 		else rotate_left();
 	}
 	void dropFromContainer() {
-		armMotor->changeDirection(CW);
-		armMotor->write(0.5f);
+		armMotor.changeDirection(CW);
+		armMotor.write(0.5f);
 		delay(1000);
-		armMotor->invertDirection();
-		armMotor->write(0.5f);
-		armMotor->invertDirection();
+		armMotor.invertDirection();
+		armMotor.write(0.5f);
+		armMotor.invertDirection();
 		delay(250); 
 
 	}
@@ -172,6 +184,8 @@ public:
 
 		}
 	}
+
+	
 };
 
 
@@ -179,11 +193,11 @@ stepperMotor rotationMotor;
 stepperMotor sliderMotor;
 stepperMotor armMotor;
 stepperMotor coverMotor;
-stove mainStove;
-Servo myservo;
+Servo containerMotor;
 
-//servoMotor containerMotor;
-container c(zero, &sliderMotor, &rotationMotor, &armMotor, &myservo);
+stove mainStove;
+
+container c(zero);
 
 /*********************************** Global functions ************************************/
 
@@ -212,15 +226,13 @@ void setup() {					/*To execute only once*/
 	pinMode(12, OUTPUT);
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
-	myservo.attach(3, 1000, 2000);
+	containerMotor.attach(3, 1000, 2000);
 	armMotor.init(&conf4);
 	coverMotor.init(&conf5);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(11, LOW);
 	digitalWrite(12, LOW);
-	/*digitalWrite(13, LOW);
-	digitalWrite(7, LOW);*/
 
 }
 
