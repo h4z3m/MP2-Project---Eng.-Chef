@@ -47,7 +47,7 @@ class container {
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
+	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, Servo* container) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
@@ -99,7 +99,7 @@ public:
 		containerMotor->write(90);
 	}
 
-	void get_from_container(enum Container_ID targetContainer)
+	void get_from_container(enum Container_ID targetContainer, uint16 time_push_sec, uint16 time_open_sec)
 	{
 		rotate_to_mid();
 		delay(1000);
@@ -107,7 +107,7 @@ public:
 		delay(1000);
 		rotateToContainer(targetContainer);
 		delay(1000);
-		c.open_container(1, 2);
+		c.open_container(time_push_sec, time_open_sec);
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
@@ -242,9 +242,9 @@ void loop() {
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
 		sliderMotor.changeDirection(stepperDirection::CW);*/
-		c.get_from_container(seven);
+		c.get_from_container(seven,1,2);
 		
-		c.get_from_container(zero);
+		c.get_from_container(zero,1,1);
 	}
 }
 
