@@ -78,7 +78,7 @@ public:
 		stirringMotor.setSpeed(0);
 	}
 
-	void openCover() {
+	/*void openCover() {
 		stopStirring();
 		if (coverState == OPENED)
 			return;
@@ -94,7 +94,7 @@ public:
 		coverMotor.write(0.9f);
 		coverState = CLOSED;
 		delay(1000);
-	}
+	}*/
 	void rotate_to_mid() {
 		if (current_direction == even) { rotate_left(); }
 		else if (current_direction == odd) { rotate_right(); }
@@ -152,7 +152,7 @@ public:
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
-		openCover();
+		//openCover();
 		delay(1000);
 		moveToContainer(nine);
 		delay(2000);
@@ -241,9 +241,10 @@ container c(zero);
 /*Ali was here*/
 void botato() {
 	//mainStove.heat_minutes_for_normal_humans(0.5);
-	c.moveToContainer(zero);
+	c.moveToContainer(two);
 	//c.moveToPlate();
 	delay(5000);
+	c.moveToContainer(zero);
 }
 
 void roz_blebn() {
@@ -257,6 +258,7 @@ void roz_blebn() {
 	delay(25 * 60 * 1000);
 }
 /********************************** Setup function **********************************/
+char order;
 void setup() {					/*To execute only once*/
 	Serial.begin(9600);
 	/*
@@ -268,10 +270,8 @@ void setup() {					/*To execute only once*/
 		2. Move arm under each container and make sure of its position
 	*/
 	pinMode(relPin, OUTPUT);
-	pinMode(13, OUTPUT);
-	pinMode(7, OUTPUT);
-	pinMode(11, OUTPUT);
-	pinMode(12, OUTPUT);
+	pinMode(30, OUTPUT);
+	pinMode(29, OUTPUT);
 	//Motor initialization
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
@@ -281,14 +281,14 @@ void setup() {					/*To execute only once*/
 	stirringMotor.init(&conf6);
 
 	digitalWrite(relPin, LOW);
-	digitalWrite(11, LOW);
-	digitalWrite(12, LOW);
+	digitalWrite(30, LOW);
+	digitalWrite(29, LOW);
 
 	//mainStove.heat_minutes_for_normal_humans(0.5);
 }
 
 /********************************** Program super loop **********************************/
-
+unsigned char recipe = 0;
 void loop() {
 	//cover motor
 	/*/c.closeCover();
@@ -322,9 +322,11 @@ void loop() {
 
 	//all of the above
 	c.get_from_container(zero, 1, 1);*/
-	roz_blebn();
+	
+
 }
 
 
 
 
+	
