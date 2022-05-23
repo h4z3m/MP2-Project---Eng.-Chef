@@ -73,17 +73,18 @@ public:
 		sliderMotor->changeDirection(sliderMotor->currDir);
 	}
 
-	void open_container(uint16 time_sec) {
-		containerMotor->write(45);
-		delay(1800);
+	void open_container(uint16 time_push_sec,uint16 time_open_sec) {
+		containerMotor->write(135);
+		delay(time_push_sec*1000);
 		containerMotor->write(90);
-		delay(time_sec*1000);
-		
+		delay(time_open_sec*1000);
+		close_container(time_push_sec);
 	}
 
-	void close_container() {
-		containerMotor->write(135);
-		delay(1500);
+	void close_container(uint16 time_pull_sec) {
+		containerMotor->write(45);
+		delay(time_pull_sec*1000);
+		containerMotor->write(90);
 	}
 
 	void get_from_container(enum Container_ID targetContainer)
@@ -93,6 +94,8 @@ public:
 		moveToContainer(targetContainer);
 		delay(1000);
 		rotateToContainer(targetContainer);
+		delay(1000);
+		c.open_container(1, 2);
 		delay(1000);
 		rotate_to_mid();
 		delay(1000);
@@ -202,10 +205,9 @@ void loop() {
 		c.rotate_to_mid();
 		rotationMotor.changeDirection(stepperDirection::CW);
 		sliderMotor.changeDirection(stepperDirection::CW);*/
-		c.rotate_right();
-		c.open_container(5);
-		c.close_container();
-		c.rotate_left();
+		c.get_from_container(seven);
+		
+		c.get_from_container(zero);
 	}
 }
 
