@@ -16,8 +16,6 @@
 #include "Motor.h"
 /********************************** Types declarations **********************************/
 typedef enum DC_direction {
-    CCW = LOW,
-    CW = HIGH
 };
 
 class dcMotor : public Motor{
@@ -28,7 +26,7 @@ public:
     dcMotor();
     void init(struct Motor_configType* conf);
     void write(float32 angle);
-    void changeDirection(DC_direction dir);
+    void changeDirection(uint8 dir);
     void setSpeed(uint8 Motor_speed);
     void rotateDistance(uint8 distance);
     void returnToInitial();

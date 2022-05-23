@@ -4,7 +4,7 @@
 #include <LiquidCrystal.h>
 #define DEBUG_MODE (1u)
 #include <Stepper.h>
-
+#include "dcMotor.h"
 #include "servoMotor.h"
 #include "stepperMotor.h" 
 #include "stove.h"
@@ -308,8 +308,8 @@ void loop() {
 
 
 	//containerMotor
-	c.open_container(1, 1);
-	c.close_container(1);
+	//c.open_container(1, 1);
+	//c.close_container(1);
 
 	/*
 	//slider motor
@@ -322,6 +322,7 @@ void loop() {
 
 	//all of the above
 	c.get_from_container(zero, 1, 1);*/
+	roz_blebn();
 }
 
 

@@ -45,7 +45,7 @@ void dcMotor::setSpeed(uint8 Motor_speed)
 	analogWrite(motorConfig->pin, Motor_speed);
 }
 
-void dcMotor::changeDirection(DC_direction dir)
+void dcMotor::changeDirection(uint8 dir)
 {
 	analogWrite(motorConfig->dirPin, dir);
 }
