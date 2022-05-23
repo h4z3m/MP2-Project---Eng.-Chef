@@ -47,7 +47,7 @@ class container {
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, servoMotor* container) {
+	container(Container_ID initalContainer, stepperMotor* slider, stepperMotor* rotation,stepperMotor* arm, Servo* container) {
 		currentContainer = initalContainer;
 		sliderMotor = slider;
 		rotationMotor = rotation;
