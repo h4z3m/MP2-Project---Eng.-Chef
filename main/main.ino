@@ -1,11 +1,6 @@
-//
 // 
 // TODO: Calibrate pumps duration for each liquid
 // 
-// 
-// 
-//
-
 
 //Libraries
 #include <Key.h>
@@ -23,22 +18,22 @@
 #define DEBUG_MODE (1u)
 /********************************** Global variables **********************************/
 //Slider stepper motor config
-struct Motor_configType conf1 = { 22,23,0,0,0,10800.0f,700 };
+struct Motor_configType conf1 = { 6,9,0,0,0,10800.0f,700 };
 //Rotation stepper config
-struct Motor_configType conf2 = { 22,23,0,0,0,360,1000 };
+struct Motor_configType conf2 = { 6,9,0,0,0,360,1000 };
 //Container servo motor config
-struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
+//struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
 //Arm motor stepper config
-struct Motor_configType conf4 = { 28,27,0,0,0,360,800 };
+struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
 //Cover stepper motor
-struct Motor_configType conf5 = { 30,29,0,0,0,360,800 };
+struct Motor_configType conf5 = { 8,7,0,0,0,360,800 };
 //Stirring DC motor config
 struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
 
 /*********************************** Definitions ************************************/
-#define relPin 24
+#define relPin 2
 #define WATER_PUMP_PIN 31
-#define MILK_PUMP_PIN 34
+#define MILK_PUMP_PIN 13
 #define OIL_PUMP_PIN 33
 #define CREAM_PUMP_PIN 32
 
@@ -46,25 +41,12 @@ struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
 #define STIRRING_SPEED (128U)
 /*********************************** Types declarations ************************************/
 enum Container_ID {
-	DEFAULT_POSITION = 0,
-	Chicken = 0,
-	Botato = 1,
-	Pasta = 1,
-	Rice = 3,
-	Onions = 3,
-	Kale = 4,
-	Mozzarella = 3,
-	Sugar = 6,
-	SaltPepper = 5,
-	Spices = 8,
-	MasalaSpices = 9,
-	//1,3,5
+	zero,one,two,three,four,five,six,seven,eight,nine
 };
 
 enum rotation_direction {
 	middle, even, odd
 };
-
 enum Liquids {
 	Water, Milk, Oil, Cream
 };
@@ -83,7 +65,7 @@ dcMotor stirringMotor;
 //Stove
 stove mainStove;
 //User interface
-//UserInterface UI;
+UserInterface UI;
 //UI variables 
 bool inputFinished = false;
 Additives* additives;
@@ -126,16 +108,32 @@ public:
 		stopStirring();
 		if (coverState == Cover_State::OPENED)
 			return;
-		coverMotor.changeDirection(stepperDirection::CCW);
-		coverMotor.write(0.9f);
+		coverMotor.changeDirection(stepperDirection::CW);
+		//coverMotor.write(0.906f);
+		uint16 SPR = 1600;
+		uint16 totalSteps = float(0.906) * SPR;
+		for (uint16 steps = 0; steps < totalSteps; ++steps) {
+			digitalWrite(8, HIGH);
+			delayMicroseconds(1000);
+			digitalWrite(8, LOW);
+			delayMicroseconds(1000);
+		}
 		coverState = Cover_State::OPENED;
 		delay(1000);
 	}
 	void closeCover() {
 		if (coverState == Cover_State::CLOSE)
 			return;
-		coverMotor.changeDirection(stepperDirection::CW);
-		coverMotor.write(0.9f);
+		coverMotor.changeDirection(stepperDirection::CCW);
+		//coverMotor.write(0.906f);
+		uint16 SPR = 1600;
+		uint16 totalSteps = float(0.906) * SPR;
+		for (uint16 steps = 0; steps < totalSteps; ++steps) {
+			digitalWrite(8, HIGH);
+			delayMicroseconds(1000);
+			digitalWrite(8, LOW);
+			delayMicroseconds(1000);
+		}
 		coverState = Cover_State::CLOSE;
 		delay(1000);
 	}
@@ -198,11 +196,11 @@ public:
 		delay(1000);
 		//openCover();
 		delay(1000);
-		moveToContainer(MasalaSpices);
+		moveToContainer(nine);
 		delay(2000);
 		rotate_then_drop_in_7ala();
 		delay(2000);
-		moveToContainer(DEFAULT_POSITION);
+		moveToContainer(zero);
 		//Serial.println(sliderMotor->currDir);
 	}
 
@@ -268,11 +266,11 @@ public:
 	void rotate_then_drop_in_7ala() {
 		digitalWrite(relPin, HIGH);
 		rotationMotor.changeDirection(stepperDirection::CCW);
-		rotationMotor.write(0.1f);
+		rotationMotor.write(0.05f);
 		delay(1000);
 		dropFromContainer();
 		rotationMotor.changeDirection(stepperDirection::CW);
-		rotationMotor.write(0.1f);
+		rotationMotor.write(0.05f);
 		delay(1000);
 		digitalWrite(relPin, LOW);
 		delay(500);
@@ -280,41 +278,35 @@ public:
 	void getReadyToCook() {
 		stopStirring();
 		openCover();
-		moveToContainer(Chicken);
+		moveToContainer(zero);
 	}
 };
 
-container c(Chicken);
+container c(zero);
 
 /*********************************** Global recipe functions ************************************/
 
 /*Ali was here*/
 void botato() {
 	//mainStove.heat_minutes_for_normal_humans(0.5);
-	c.moveToContainer(Botato);
+	c.moveToContainer(one);
 	//c.moveToPlate();
 	delay(5000);
-	c.moveToContainer(Chicken);
+	c.moveToContainer(one);
 }
 
-
-void roz_blebn() {
-	//c.pumpLiquid(Milk);
-	//c.pumpLiquid(Cream);
-	c.get_from_container(Rice, 2 ,2);
-	//c.pumpLiquid(Water);
-	//stearing code
-	c.get_from_container(Sugar, 1, 1);
-	c.get_from_container(Chicken, 1, 1);
-	delay(25 * 60 * 1000);
-}
-void chickenPasta() {
+void recipe_chickenMasala() {
 	//Pump oil
 	c.pumpLiquid(Oil, 1);
 	//Get chicken
-	c.get_from_container(Chicken, 2, 1);
+	c.get_from_container(six, 2, 1);
+	/********* Optional additive *************/
+	//**Get extra chicken
+	for (uint8 i = 0; i < additives->chicken; ++i)
+		c.get_from_container(six, 2, 1);
+	/****************************************/
 	//Get salt & pepper
-	c.get_from_container(SaltPepper, 1, 0.1);
+	c.get_from_container(five, 1, 0.1);
 	//Stir
 	c.closeCover();
 	c.startStirring();
@@ -325,69 +317,157 @@ void chickenPasta() {
 	//Add oil
 	c.pumpLiquid(Oil, 1);
 	//Get mushroom & onions
-	c.get_from_container(Onions, 2, 2);
+	c.get_from_container(eight, 2, 2);
+	/********* Optional additive *************/
+
+	//**Get masala spices
+	for (uint8 i = 0; i < additives->spices; ++i)
+		c.get_from_container(five, 1, 1);
+	//**Get onions
+	for (uint8 i = 0; i < additives->onions; ++i)
+		c.get_from_container(six, 1, 1);
+	/****************************************/
+
 	//Add water
 	c.pumpLiquid(Water, 1);
 	//Add cream
 	c.pumpLiquid(Cream, 1);
 	//Add pasta
-	c.get_from_container(Pasta, 2, 2);
+	c.get_from_container(zero, 2, 2);
 	//Add cheddar
-	c.get_from_container(Mozzarella, 2, 2);
+	//c.get_from_container(Mozzarella, 2, 2);
+	//Close cover and stir for 10 mins
+	c.closeCover();
+	c.startStirring();
+	//Wait 10mins
+	delay(10 *1000* 60);
+	c.stopStirring();
+	c.openCover();
+}
+
+void roz_blebn() {
+	c.closeCover();
+	delay(5000);
+	c.openCover();
+	//c.pumpLiquid(Milk,2);
+	//c.pumpLiquid(Cream,2);
+	c.get_from_container(zero, 2 ,2);
+	//c.pumpLiquid(Water,2);
+	//stearing code
+	c.get_from_container(three, 1, 1);
+	c.get_from_container(five, 1, 1);
+	delay(25 * 60 * 1000);
+}
+
+void recipe_chickenPasta() {
+	//Pump oil
+	c.pumpLiquid(Oil, 1);
+	//Get chicken
+	c.get_from_container(six, 2, 1);
+	//Get salt & pepper
+	c.get_from_container(five, 1, 0.1);
+
+	/********* Optional additive *************/
+
+	//**Get extra chicken
+	for (uint8 i = 0; i < additives->chicken; ++i)
+		c.get_from_container(six, 2, 1);
+
+	
+	//**Get spices
+	for (uint8 i = 0; i < additives->spices; ++i)
+		c.get_from_container(six, 2, 1);
+	/****************************************/
+	//Stir
+	c.closeCover();
+	c.startStirring();
+	//Stir for 10 mins
+	delay(10 * 60);
+	c.stopStirring();
+	c.openCover();
+	//Add oil
+	c.pumpLiquid(Oil, 1);
+	//Get mushroom & onions
+	c.get_from_container(eight, 2, 2);
+	//Add water
+	c.pumpLiquid(Water, 1);
+	//Add cream
+	c.pumpLiquid(Cream, 1);
+	//Add pasta
+	c.get_from_container(five, 2, 2);
+	//Add cheddar
+	//c.get_from_container(Mozzarella, 2, 2);
 	//Close cover and stir for 10 mins
 	c.closeCover();
 	c.startStirring();
 	delay(10 * 60);
 	c.stopStirring();
 	c.openCover();
-
 }
-
 
 void recipe_MacNCheese() {
 	//open cover, stop stirring
 	c.getReadyToCook();
+	delay(1000);
+	c.openCover();
 	//Add milk
 	c.pumpLiquid(Milk, 6);
 	//Wait 1 min
-	//delay(60 * 1000);
-	delay(1000);
+    delay(60 * 1000);
+	//delay(1000);
 	//Add pasta
-	c.get_from_container(Pasta,1,4);
+	c.get_from_container(one, 2, 3);
+	c.get_from_container(one, 2, 3);
 	//Close container then stir
 	c.closeCover();
 	c.startStirring();
 	//Wait 10mins
-	//delay(10 * 60 * 1000);
-	delay(2000);
+	delay(10*60*1000);
+	//delay(2000);
 	
 	//Open container
 	c.openCover();
 	//Add mozzarella & salt
-	c.get_from_container(SaltPepper,1,0.4);
-	c.get_from_container(Mozzarella,3,3);
+	for (uint8 i = 0; i < additives->salt; ++i)
+		c.get_from_container(five, 3, 3);
+	/********* Optional additive *************/
+
+	for (uint8 i = 0; i < additives->cheese; ++i)
+		c.get_from_container(three, 3, 3);
+
+	for (uint8 i = 0; i < additives->spices; ++i)
+		c.get_from_container(one, 3, 3);
+	/****************************************/
+
 	//Close cover and keep stirring
 	c.closeCover();
 	c.startStirring();
 	//Wait 2mins
 	delay(2 * 60 * 1000);
-	delay(100000);
+
+	//delay(100000);
 }
 
 void crispyPotato() {
 	c.getReadyToCook();
-
 	//Pump oil
 	c.pumpLiquid(Oil, 2);
 	//Get potatoes
-	c.get_from_container(Botato,1,1);
+	c.get_from_container(five,1,1);
 	//Close cover & start stirring
 	c.closeCover();
 	c.startStirring();
 	//Keep stirring for 3 mins
-	delay(3*60*1000);
+	delay(5*60*1000);
+	/********* Optional additive *************/
+
 	//**Get spices
-	c.get_from_container(Spices, 1, 1);
+	for(uint8 i = 0;i< additives->spices;++i)
+		c.get_from_container(five, 1, 1);
+	//**Get salt
+	for (uint8 i = 0; i < additives->salt; ++i)
+		c.get_from_container(five, 1, 1);
+	/****************************************/
 
 }
 /********************************** Setup function **********************************/
@@ -407,16 +487,21 @@ void setup() {					/*To execute only once*/
 	//Motor initialization
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
-	containerMotor.attach(3, 1000, 2000);
+	containerMotor.attach(3);
 	armMotor.init(&conf4);
 	coverMotor.init(&conf5);
 	stirringMotor.init(&conf6);
 
 	digitalWrite(relPin, LOW);
-	/*digitalWrite(22, LOW);
-	digitalWrite(23, LOW);
-	digitalWrite(28, LOW);
-	digitalWrite(27, LOW);
+	digitalWrite(6, LOW);
+	digitalWrite(9, LOW);
+	digitalWrite(11, LOW);
+	
+	digitalWrite(12, LOW);
+	digitalWrite(8, LOW);
+	digitalWrite(7, LOW);
+
+	/*
 	digitalWrite(30, LOW);
 	digitalWrite(29, LOW);
 	analogWrite(31, 0);
@@ -437,7 +522,15 @@ void loop() {
 	//c.rotate_then_drop_in_7ala();
 	//recipe_MacNCheese();
 	roz_blebn();
-	c.moveToContainer(DEFAULT_POSITION);
+	//c.openCover();
+	/*for (uint16 steps = 0; steps < 1450; ++steps) {
+		digitalWrite(8, HIGH);
+		delayMicroseconds(1000);
+		digitalWrite(8, LOW);
+		delayMicroseconds(1000);
+	}*/
+	//recipe_MacNCheese();
+	//c.moveToContainer(zero);
 	delay(50000);
 	//recipe_MacNCheese();
 	//delay(1000000);
@@ -496,17 +589,40 @@ void loop() {
 	
 	
 	//recipe_MacNCheese();
-	//if (!inputFinished) {
-	//	UI.getUserInput();
-	//	UI.lcd->clear();
-	//	UI.lcd->setCursor(0, 0);
-	//	UI.lcd->print("Cooking :)");
-	//	recipe = UI.getRecipe();
-	//	inputFinished = true;
-	//}
-	//else {
+	if (!inputFinished) {
+		UI.getUserInput();
+		UI.lcd->clear();
+		UI.lcd->setCursor(0, 0);
+		UI.lcd->print("Cooking :)");
+		recipe = UI.getRecipe();
+		additives = UI.getAdditives();
 
-	//}
+		inputFinished = true;
+		//Decide which recipe to cook
+		switch (recipe) {
+		case MacNCheese:
+			recipe_MacNCheese();
+			break;
+		case ChickenPasta:
+			recipe_chickenPasta();
+			break;
+		case RicePudding:
+			roz_blebn();
+			break;
+		case Masala:
+			recipe_chickenMasala();
+			break;
+		case CrispyPotato:
+			crispyPotato();
+			break;
+		}
+		//To be ready for next recipe
+		inputFinished = false;
+
+	}
+	else {
+
+	}
 	/*coverMotor.write(0.906f);
 	delay(1000);
 	sliderMotor.write(0.8f);

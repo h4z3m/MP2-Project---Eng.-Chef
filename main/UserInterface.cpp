@@ -17,33 +17,33 @@ UserInterface::UserInterface()
 {
 	lcd = setupLCD();
 }
-
-void UserInterface::printLCD(char* add1Msg, char* add2Msg, char* add3Msg, byte qty1, byte qty2, byte qty3) {
-	if (add1Msg) {
-		lcd->clear();
-		lcd->setCursor(0, 0);
-		lcd->print(add1Msg);
-		lcd->setCursor(0, 15);
-		lcd->print(qty1);
-		delay(3000);
-	}
-	if (add2Msg) {
-		lcd->clear();
-		lcd->setCursor(0, 0);
-		lcd->print(add2Msg);
-		lcd->setCursor(0, 15);
-		lcd->print(qty2);
-		delay(3000);
-	}
-	if (add3Msg) {
-		lcd->clear();
-		lcd->setCursor(0, 0);
-		lcd->print(add3Msg);
-		lcd->setCursor(0, 15);
-		lcd->print(qty3);
-		delay(3000);
-	}
-}
+//
+//void UserInterface::printLCD(char* add1Msg, char* add2Msg, char* add3Msg, byte qty1, byte qty2, byte qty3) {
+//	if (add1Msg) {
+//		lcd->clear();
+//		lcd->setCursor(0, 0);
+//		lcd->print(add1Msg);
+//		lcd->setCursor(0, 15);
+//		lcd->print(qty1);
+//		delay(3000);
+//	}
+//	if (add2Msg) {
+//		lcd->clear();
+//		lcd->setCursor(0, 0);
+//		lcd->print(add2Msg);
+//		lcd->setCursor(0, 15);
+//		lcd->print(qty2);
+//		delay(3000);
+//	}
+//	if (add3Msg) {
+//		lcd->clear();
+//		lcd->setCursor(0, 0);
+//		lcd->print(add3Msg);
+//		lcd->setCursor(0, 15);
+//		lcd->print(qty3);
+//		delay(3000);
+//	}
+//}
 
 void UserInterface::ErrorFun() {    //short for Error Function
 	lcd->clear();
@@ -159,7 +159,7 @@ void UserInterface::ChickenMasala(byte b) {
 	// second variable additive is pepper
 	// third variable additive is Oil
 		char* msg1 = "Spices Qty:";
-		char* msg2 = "Chicken Qty:";
+		char* msg2 = "Ex Chicken:";
 		char* msgs[] = { msg1,msg2};
 		additivesArray = getAdditivesArray(numberofAdditives, msgs);
 		add.spices= additivesArray[0];
