@@ -596,28 +596,43 @@ void loop() {
 		UI.lcd->print("Cooking :)");
 		recipe = UI.getRecipe();
 		additives = UI.getAdditives();
+		/********************************************/
 
-		inputFinished = true;
-		//Decide which recipe to cook
-		switch (recipe) {
-		case MacNCheese:
-			recipe_MacNCheese();
-			break;
-		case ChickenPasta:
-			recipe_chickenPasta();
-			break;
-		case RicePudding:
-			roz_blebn();
-			break;
-		case Masala:
-			recipe_chickenMasala();
-			break;
-		case CrispyPotato:
-			crispyPotato();
-			break;
-		}
-		//To be ready for next recipe
-		inputFinished = false;
+		Serial.println("Recipe:");
+		Serial.print(recipe);
+		Serial.println("Salt:");
+		Serial.print(additives->salt);
+		Serial.println("cheese:");
+		Serial.print(additives->cheese);
+		Serial.println("chicken:");
+		Serial.print(additives->chicken);
+		Serial.println("onions:");
+		Serial.print(additives->onions);
+		Serial.println("spices:");
+		Serial.print(additives->spices);
+
+		/********************************************/
+		//inputFinished = true;
+		////Decide which recipe to cook
+		//switch (recipe) {
+		//case MacNCheese:
+		//	recipe_MacNCheese();
+		//	break;
+		//case ChickenPasta:
+		//	recipe_chickenPasta();
+		//	break;
+		//case RicePudding:
+		//	roz_blebn();
+		//	break;
+		//case Masala:
+		//	recipe_chickenMasala();
+		//	break;
+		//case CrispyPotato:
+		//	crispyPotato();
+		//	break;
+		//}
+		////To be ready for next recipe
+		//inputFinished = false;
 
 	}
 	else {
