@@ -302,8 +302,8 @@ void UserInterface::getUserInput() {
 
 }
 
-char UserInterface::decodeFun(char input) {
-	char reservedVal = input;
+int UserInterface::decodeFun(char input) {
+	int reservedVal = input;
 	char newReserved = input;
 	recipe = input >> 5;
 	reservedVal = reservedVal & (0x1F);

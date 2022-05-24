@@ -37,6 +37,9 @@ struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
 #define OIL_PUMP_PIN 33
 #define CREAM_PUMP_PIN 32
 
+#define IN3 8
+#define IN4 7
+#define ENB 5
 #define PUMP_DURATION_MS (3000U)
 #define STIRRING_SPEED (128U)
 /*********************************** Types declarations ************************************/
@@ -81,7 +84,9 @@ public:
 
 	container(Container_ID initalContainer) {
 		currentContainer = initalContainer;
-		
+		pinMode(IN3, OUTPUT);
+		pinMode(IN4, OUTPUT);
+		pinMode(ENB, OUTPUT);
 		pinMode(WATER_PUMP_PIN, OUTPUT);
 		pinMode(MILK_PUMP_PIN, OUTPUT);
 		pinMode(OIL_PUMP_PIN, OUTPUT);
@@ -108,16 +113,14 @@ public:
 		stopStirring();
 		if (coverState == Cover_State::OPENED)
 			return;
-		coverMotor.changeDirection(stepperDirection::CW);
-		//coverMotor.write(0.906f);
-		uint16 SPR = 1600;
-		uint16 totalSteps = float(0.906) * SPR;
-		for (uint16 steps = 0; steps < totalSteps; ++steps) {
-			digitalWrite(8, HIGH);
-			delayMicroseconds(1000);
-			digitalWrite(8, LOW);
-			delayMicroseconds(1000);
-		}
+
+		digitalWrite(IN3, LOW);
+		digitalWrite(IN4, HIGH);
+		analogWrite(ENB, 100);
+		delay(1000);
+		digitalWrite(IN4, LOW);
+		digitalWrite(IN3, LOW);
+		analogWrite(ENB, 0);
 		coverState = Cover_State::OPENED;
 		delay(1000);
 	}
@@ -125,15 +128,15 @@ public:
 		if (coverState == Cover_State::CLOSE)
 			return;
 		coverMotor.changeDirection(stepperDirection::CCW);
-		//coverMotor.write(0.906f);
-		uint16 SPR = 1600;
-		uint16 totalSteps = float(0.906) * SPR;
-		for (uint16 steps = 0; steps < totalSteps; ++steps) {
-			digitalWrite(8, HIGH);
-			delayMicroseconds(1000);
-			digitalWrite(8, LOW);
-			delayMicroseconds(1000);
-		}
+		digitalWrite(IN3, HIGH);
+		digitalWrite(IN4, LOW);
+		analogWrite(ENB, 100);
+		delay(1000);
+		digitalWrite(IN4, LOW);
+		digitalWrite(IN3, LOW);
+		analogWrite(ENB, 0);
+		delay(1000);
+
 		coverState = Cover_State::CLOSE;
 		delay(1000);
 	}
@@ -520,8 +523,8 @@ void loop() {
 	//delay(5000);
 	//c.dropFromContainer();
 	//c.rotate_then_drop_in_7ala();
-	//recipe_MacNCheese();
-//	roz_blebn();
+	recipe_MacNCheese();
+	//roz_blebn();
 	//c.openCover();
 	/*for (uint16 steps = 0; steps < 1450; ++steps) {
 		digitalWrite(8, HIGH);
@@ -589,55 +592,55 @@ void loop() {
 	
 	
 	//recipe_MacNCheese();
-	if (!inputFinished) {
-		UI.getUserInput();
-		UI.lcd->clear();
-		UI.lcd->setCursor(0, 0);
-		UI.lcd->print("Cooking :)");
-		recipe = UI.getRecipe();
-		additives = UI.getAdditives();
-		/********************************************/
-		Serial.println("Recipe:");
-		Serial.print(recipe);
-		Serial.println("Salt:");
-		Serial.print(additives->salt);
-		Serial.println("cheese:");
-		Serial.print(additives->cheese);
-		Serial.println("chicken:");
-		Serial.print(additives->chicken);
-		Serial.println("onions:");
-		Serial.print(additives->onions);
-		Serial.println("spices:");
-		Serial.print(additives->spices);
-		delay(2000);
-		/********************************************/
+	//if (!inputFinished) {
+	//	UI.getUserInput();
+	//	UI.lcd->clear();
+	//	UI.lcd->setCursor(0, 0);
+	//	UI.lcd->print("Cooking :)");
+	//	recipe = UI.getRecipe();
+	//	additives = UI.getAdditives();
+	//	/********************************************/
+	//	Serial.println("Recipe:");
+	//	Serial.print(recipe);
+	//	Serial.println("Salt:");
+	//	Serial.print(additives->salt);
+	//	Serial.println("cheese:");
+	//	Serial.print(additives->cheese);
+	//	Serial.println("chicken:");
+	//	Serial.print(additives->chicken);
+	//	Serial.println("onions:");
+	//	Serial.print(additives->onions);
+	//	Serial.println("spices:");
+	//	Serial.print(additives->spices);
+	//	delay(2000);
+	//	/********************************************/
 
-		inputFinished = true;
-		////Decide which recipe to cook
-		//switch (recipe) {
-		//case MacNCheese:
-		//	recipe_MacNCheese();
-		//	break;
-		//case ChickenPasta:
-		//	recipe_chickenPasta();
-		//	break;
-		//case RicePudding:
-		//	roz_blebn();
-		//	break;
-		//case Masala:
-		//	recipe_chickenMasala();
-		//	break;
-		//case CrispyPotato:
-		//	crispyPotato();
-		//	break;
-		//}
-		////To be ready for next recipe
-		//inputFinished = false;
+	//	inputFinished = true;
+	//	////Decide which recipe to cook
+	//	//switch (recipe) {
+	//	//case MacNCheese:
+	//	//	recipe_MacNCheese();
+	//	//	break;
+	//	//case ChickenPasta:
+	//	//	recipe_chickenPasta();
+	//	//	break;
+	//	//case RicePudding:
+	//	//	roz_blebn();
+	//	//	break;
+	//	//case Masala:
+	//	//	recipe_chickenMasala();
+	//	//	break;
+	//	//case CrispyPotato:
+	//	//	crispyPotato();
+	//	//	break;
+	//	//}
+	//	////To be ready for next recipe
+	//	//inputFinished = false;
 
-	}
-	else {
+	//}
+	//else {
 
-	}
+	//}
 	/*coverMotor.write(0.906f);
 	delay(1000);
 	sliderMotor.write(0.8f);

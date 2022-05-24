@@ -131,7 +131,7 @@ private:
 	byte recipe;
 	int inputMode; //input mode is 0 for keyinput and 1 for serial web
 	int inputEntered;
-	char decodeFun(char x);
+	int decodeFun(char x);
 	//void printLCD(char* add1Msg, char* add2Msg, char* add3Msg, byte qty1, byte qty2, byte qty3);
 public:
 	UserInterface();
