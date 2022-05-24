@@ -193,7 +193,6 @@ void UserInterface::CrispyPotato(byte b) {
 		byte input = b;
 		add.salt = (b >> 1) & (0x01);
 		add.spices = (b) & (0x01);
-
 	}
 	return;
 }
@@ -274,6 +273,7 @@ void UserInterface::getUserInput() {
 
 	while (!inputEntered) {
 		key = keypad.getKey();
+		Serial.println(key);
 		int keyConverted = key - '0';
 		if (key) { // if there is a key pressed not empty charachter
 			if (keyConverted >= FIRST_RECIPE_NO && keyConverted <= LAST_RECIPE_NO) {
@@ -302,7 +302,7 @@ void UserInterface::getUserInput() {
 
 }
 
-Recipes UserInterface::decodeFun(char input) {
+char UserInterface::decodeFun(char input) {
 	char reservedVal = input;
 	char newReserved = input;
 	recipe = input >> 5;

@@ -517,11 +517,11 @@ void setup() {					/*To execute only once*/
 /********************************** Program super loop **********************************/
 unsigned char recipe = 0;
 void loop() {
-	delay(5000);
+	//delay(5000);
 	//c.dropFromContainer();
 	//c.rotate_then_drop_in_7ala();
 	//recipe_MacNCheese();
-	roz_blebn();
+//	roz_blebn();
 	//c.openCover();
 	/*for (uint16 steps = 0; steps < 1450; ++steps) {
 		digitalWrite(8, HIGH);
@@ -531,7 +531,7 @@ void loop() {
 	}*/
 	//recipe_MacNCheese();
 	//c.moveToContainer(zero);
-	delay(50000);
+	//delay(50000);
 	//recipe_MacNCheese();
 	//delay(1000000);
 	//cover motor
@@ -597,7 +597,6 @@ void loop() {
 		recipe = UI.getRecipe();
 		additives = UI.getAdditives();
 		/********************************************/
-
 		Serial.println("Recipe:");
 		Serial.print(recipe);
 		Serial.println("Salt:");
@@ -610,9 +609,10 @@ void loop() {
 		Serial.print(additives->onions);
 		Serial.println("spices:");
 		Serial.print(additives->spices);
-
+		delay(2000);
 		/********************************************/
-		//inputFinished = true;
+
+		inputFinished = true;
 		////Decide which recipe to cook
 		//switch (recipe) {
 		//case MacNCheese:
