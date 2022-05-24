@@ -6,7 +6,7 @@
 #define MAX_SAFE_TEMP_CELSIUS (105)
 #define RELAY_HIGH_LOGIC (HIGH)
 #define RELAY_LOW_LOGIC (LOW)
-#define RELAY_PIN (5)
+#define RELAY_PIN (41)
 
 class stove {
   public:

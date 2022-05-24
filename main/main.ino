@@ -18,28 +18,36 @@
 #define DEBUG_MODE (1u)
 /********************************** Global variables **********************************/
 //Slider stepper motor config
-struct Motor_configType conf1 = { 6,9,0,0,0,10800.0f,700 };
+struct Motor_configType conf1 = { 22,23,0,0,0,10800.0f,700 };
 //Rotation stepper config
-struct Motor_configType conf2 = { 6,9,0,0,0,360,1000 };
+struct Motor_configType conf2 = { 22,23,0,0,0,360,1000 };
 //Container servo motor config
 //struct Motor_configType conf3 = { 3,3,0,0,0,360,0.2f };
 //Arm motor stepper config
-struct Motor_configType conf4 = { 11,12,0,0,0,360,800 };
+struct Motor_configType conf4 = { 28,27,0,0,0,360,800 };
 //Cover stepper motor
-struct Motor_configType conf5 = { 8,7,0,0,0,360,800 };
+//struct Motor_configType conf5 = { 8,7,0,0,0,360,800 };
 //Stirring DC motor config
-struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
+//struct Motor_configType conf6 = { 31,26,0,0,0,360,120 };
 
 /*********************************** Definitions ************************************/
-#define relPin 2
-#define WATER_PUMP_PIN 31
-#define MILK_PUMP_PIN 13
-#define OIL_PUMP_PIN 33
-#define CREAM_PUMP_PIN 32
+#define relPin 24
+#define WATER_PUMP_PIN 34
+#define MILK_PUMP_PIN 33
+#define OIL_PUMP_PIN 32
+#define CREAM_PUMP_PIN 31
 
-#define IN3 8
-#define IN4 7
-#define ENB 5
+//Stirring motor
+#define IN1 25
+#define IN2 26
+#define ENA 11
+
+
+//Cover motor
+#define IN3 29
+#define IN4 30
+#define ENB 12
+
 #define PUMP_DURATION_MS (3000U)
 #define STIRRING_SPEED (128U)
 /*********************************** Types declarations ************************************/
@@ -64,7 +72,7 @@ stepperMotor sliderMotor;
 stepperMotor armMotor;
 stepperMotor coverMotor;
 Servo containerMotor;
-dcMotor stirringMotor;
+//dcMotor stirringMotor;
 //Stove
 stove mainStove;
 //User interface
@@ -80,7 +88,7 @@ class container {
 public:
 	enum Container_ID currentContainer;
 	enum rotation_direction current_direction = middle;
-	enum Cover_State coverState = Cover_State::OPENED;
+	enum Cover_State coverState = Cover_State::CLOSE;
 
 	container(Container_ID initalContainer) {
 		currentContainer = initalContainer;
@@ -102,11 +110,17 @@ public:
 	void startStirring() {
 		if (coverState == OPEN)
 			return;
-		stirringMotor.setSpeed(STIRRING_SPEED);
+		//stirringMotor.setSpeed(STIRRING_SPEED);
+		digitalWrite(IN1, HIGH);
+		digitalWrite(IN2, LOW);
+		analogWrite(ENA, 150);
 	}
 
 	void stopStirring() {
-		stirringMotor.setSpeed(0);
+		digitalWrite(IN1, LOW);
+		digitalWrite(IN2, LOW);
+		analogWrite(ENA, 0);
+		//stirringMotor.setSpeed(0);
 	}
 
 	void openCover() {
@@ -117,25 +131,26 @@ public:
 		digitalWrite(IN3, LOW);
 		digitalWrite(IN4, HIGH);
 		analogWrite(ENB, 100);
-		delay(1000);
+		delay(2000);
 		digitalWrite(IN4, LOW);
 		digitalWrite(IN3, LOW);
 		analogWrite(ENB, 0);
+		delay(2000);
+
 		coverState = Cover_State::OPENED;
 		delay(1000);
 	}
 	void closeCover() {
 		if (coverState == Cover_State::CLOSE)
 			return;
-		coverMotor.changeDirection(stepperDirection::CCW);
 		digitalWrite(IN3, HIGH);
 		digitalWrite(IN4, LOW);
-		analogWrite(ENB, 100);
-		delay(1000);
+		analogWrite(ENB, 50);
+		delay(3000);
 		digitalWrite(IN4, LOW);
 		digitalWrite(IN3, LOW);
 		analogWrite(ENB, 0);
-		delay(1000);
+		delay(2000);
 
 		coverState = Cover_State::CLOSE;
 		delay(1000);
@@ -299,6 +314,8 @@ void botato() {
 }
 
 void recipe_chickenMasala() {
+	digitalWrite(RELAY_PIN, HIGH);
+
 	//Pump oil
 	c.pumpLiquid(Oil, 1);
 	//Get chicken
@@ -346,13 +363,16 @@ void recipe_chickenMasala() {
 	delay(10 *1000* 60);
 	c.stopStirring();
 	c.openCover();
+	digitalWrite(RELAY_PIN, LOW);
+
 }
 
 void roz_blebn() {
-	c.closeCover();
+	digitalWrite(RELAY_PIN, HIGH);
 	delay(5000);
 	c.openCover();
-	//c.pumpLiquid(Milk,2);
+	delay(1000);
+	c.pumpLiquid(Milk,2);
 	//c.pumpLiquid(Cream,2);
 	c.get_from_container(zero, 2 ,2);
 	//c.pumpLiquid(Water,2);
@@ -360,6 +380,8 @@ void roz_blebn() {
 	c.get_from_container(three, 1, 1);
 	c.get_from_container(five, 1, 1);
 	delay(25 * 60 * 1000);
+	digitalWrite(RELAY_PIN, LOW);
+
 }
 
 void recipe_chickenPasta() {
@@ -409,6 +431,7 @@ void recipe_chickenPasta() {
 }
 
 void recipe_MacNCheese() {
+	digitalWrite(RELAY_PIN, HIGH);
 	//open cover, stop stirring
 	c.getReadyToCook();
 	delay(1000);
@@ -416,8 +439,9 @@ void recipe_MacNCheese() {
 	//Add milk
 	c.pumpLiquid(Milk, 6);
 	//Wait 1 min
-    delay(60 * 1000);
-	//delay(1000);
+    
+	//delay(60 * 1000);
+	delay(1000);
 	//Add pasta
 	c.get_from_container(one, 2, 3);
 	c.get_from_container(one, 2, 3);
@@ -425,21 +449,18 @@ void recipe_MacNCheese() {
 	c.closeCover();
 	c.startStirring();
 	//Wait 10mins
-	delay(10*60*1000);
-	//delay(2000);
+	//delay(10*60*1000);
+	delay(5000);
 	
 	//Open container
 	c.openCover();
 	//Add mozzarella & salt
-	for (uint8 i = 0; i < additives->salt; ++i)
-		c.get_from_container(five, 3, 3);
+	c.get_from_container(five, 1, 1);
+	c.get_from_container(three, 3, 3);
+
 	/********* Optional additive *************/
-
-	for (uint8 i = 0; i < additives->cheese; ++i)
-		c.get_from_container(three, 3, 3);
-
 	for (uint8 i = 0; i < additives->spices; ++i)
-		c.get_from_container(one, 3, 3);
+		c.get_from_container(two, 1, 1);
 	/****************************************/
 
 	//Close cover and keep stirring
@@ -449,6 +470,8 @@ void recipe_MacNCheese() {
 	delay(2 * 60 * 1000);
 
 	//delay(100000);
+	digitalWrite(RELAY_PIN, LOW);
+
 }
 
 void crispyPotato() {
@@ -475,6 +498,7 @@ void crispyPotato() {
 }
 /********************************** Setup function **********************************/
 char order;
+
 void setup() {					/*To execute only once*/
 	Serial.begin(9600);
 	/*
@@ -490,10 +514,10 @@ void setup() {					/*To execute only once*/
 	//Motor initialization
 	sliderMotor.init(&conf1);
 	rotationMotor.init(&conf2);
-	containerMotor.attach(3);
+	containerMotor.attach(13);
 	armMotor.init(&conf4);
-	coverMotor.init(&conf5);
-	stirringMotor.init(&conf6);
+	//coverMotor.init(&conf5);
+	//stirringMotor.init(&conf6);
 
 	digitalWrite(relPin, LOW);
 	digitalWrite(6, LOW);
@@ -520,10 +544,31 @@ void setup() {					/*To execute only once*/
 /********************************** Program super loop **********************************/
 unsigned char recipe = 0;
 void loop() {
+	//c.pumpLiquid(Cream, 100);
+	//digitalWrite(CREAM_PUMP_PIN, HIGH);
+	//delay(10000);
+	//digitalWrite(CREAM_PUMP_PIN, LOW);
+	//delay(10000);
+	//
+	//delay(50000);
+	//armMotor.write(0.3f);
+	//delay(1000);
+	//c.openCover();
+	//delay(2000);
+	//c.closeCover();
+	//delay(2000);
+	//c.startStirring();
+	//delay(10000);
+	//c.openCover();
+	//delay(5000);
+	//c.closeCover();
+	//delay(5000);
 	//delay(5000);
 	//c.dropFromContainer();
 	//c.rotate_then_drop_in_7ala();
-	recipe_MacNCheese();
+	//additives = UI.getAdditives();
+	//additives->spices = 2;
+	//recipe_MacNCheese();
 	//roz_blebn();
 	//c.openCover();
 	/*for (uint16 steps = 0; steps < 1450; ++steps) {
@@ -592,55 +637,55 @@ void loop() {
 	
 	
 	//recipe_MacNCheese();
-	//if (!inputFinished) {
-	//	UI.getUserInput();
-	//	UI.lcd->clear();
-	//	UI.lcd->setCursor(0, 0);
-	//	UI.lcd->print("Cooking :)");
-	//	recipe = UI.getRecipe();
-	//	additives = UI.getAdditives();
-	//	/********************************************/
-	//	Serial.println("Recipe:");
-	//	Serial.print(recipe);
-	//	Serial.println("Salt:");
-	//	Serial.print(additives->salt);
-	//	Serial.println("cheese:");
-	//	Serial.print(additives->cheese);
-	//	Serial.println("chicken:");
-	//	Serial.print(additives->chicken);
-	//	Serial.println("onions:");
-	//	Serial.print(additives->onions);
-	//	Serial.println("spices:");
-	//	Serial.print(additives->spices);
-	//	delay(2000);
-	//	/********************************************/
+	if (!inputFinished) {
+		UI.getUserInput();
+		UI.lcd->clear();
+		UI.lcd->setCursor(0, 0);
+		UI.lcd->print("Cooking :)");
+		recipe = UI.getRecipe();
+		additives = UI.getAdditives();
+		/********************************************/
+		Serial.println("Recipe:");
+		Serial.print(recipe);
+		Serial.println("Salt:");
+		Serial.print(additives->salt);
+		Serial.println("cheese:");
+		Serial.print(additives->cheese);
+		Serial.println("chicken:");
+		Serial.print(additives->chicken);
+		Serial.println("onions:");
+		Serial.print(additives->onions);
+		Serial.println("spices:");
+		Serial.print(additives->spices);
+		delay(2000);
+		/********************************************/
 
-	//	inputFinished = true;
-	//	////Decide which recipe to cook
-	//	//switch (recipe) {
-	//	//case MacNCheese:
-	//	//	recipe_MacNCheese();
-	//	//	break;
-	//	//case ChickenPasta:
-	//	//	recipe_chickenPasta();
-	//	//	break;
-	//	//case RicePudding:
-	//	//	roz_blebn();
-	//	//	break;
-	//	//case Masala:
-	//	//	recipe_chickenMasala();
-	//	//	break;
-	//	//case CrispyPotato:
-	//	//	crispyPotato();
-	//	//	break;
-	//	//}
-	//	////To be ready for next recipe
-	//	//inputFinished = false;
+		inputFinished = true;
+		//Decide which recipe to cook
+		switch (recipe) {
+		case MacNCheese:
+			recipe_MacNCheese();
+			break;
+		case ChickenPasta:
+			recipe_chickenPasta();
+			break;
+		case RicePudding:
+			roz_blebn();
+			break;
+		case Masala:
+			recipe_chickenMasala();
+			break;
+		case CrispyPotato:
+			crispyPotato();
+			break;
+		}
+		//To be ready for next recipe
+		inputFinished = false;
 
-	//}
-	//else {
+	}
+	else {
 
-	//}
+	}
 	/*coverMotor.write(0.906f);
 	delay(1000);
 	sliderMotor.write(0.8f);

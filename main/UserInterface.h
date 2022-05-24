@@ -13,19 +13,19 @@
 #define LCD_ROWS (2)
 #define LCD_COLS (16)
 #define LCD_4BITS (0U)
-#define LCD_PIN_RS (30)
-#define LCD_PIN_RW (32)
-#define LCD_PIN_EN (34)
+#define LCD_PIN_RS (8)
+#define LCD_PIN_RW (9)
+#define LCD_PIN_EN (10)
 
 #define LCD_PIN_D0 (5)
 #define LCD_PIN_D1 (6)
 #define LCD_PIN_D2 (7)
 #define LCD_PIN_D3 (8)
 
-#define LCD_PIN_D4 (28)
-#define LCD_PIN_D5 (26)
-#define LCD_PIN_D6 (24)
-#define LCD_PIN_D7 (22)
+#define LCD_PIN_D4 (7)
+#define LCD_PIN_D5 (6)
+#define LCD_PIN_D6 (5)
+#define LCD_PIN_D7 (4)
 //////////////////////////////////
 //////////keyPad //////////////////
 #include <Keypad.h>
@@ -70,6 +70,7 @@ enum Recipes {
 	RicePudding = 3,
 	Masala = 4,
 	CrispyPotato = 5
+
 };
 typedef struct Additives {  //additives that are variables
 	/*byte salt;

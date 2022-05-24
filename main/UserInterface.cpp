@@ -227,37 +227,37 @@ void UserInterface::printRecipeName(int a_recipeID)
 	lcd->clear();
 	lcd->setCursor(0, 0);
 	switch (a_recipeID) {
-	case 0:
+	case 1:
 		lcd->setCursor(0, 0);
 		lcd->clear();
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_1_name);
 		break;
-	case 1:
+	case 2:
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_2_name);
 		break;
 
-	case 2:
+	case 3:
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_3_name);
 		break;
 
-	case 3:
+	case 4:
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_4_name);
 		break;
 
-	case 4:
+	case 5:
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_5_name);
 		break;
-	case 5:
+	case 6:
 		lcd->print("Recipe is:");
 		lcd->setCursor(0, 1);
 		lcd->print(recipe_6_name);
